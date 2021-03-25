@@ -65,9 +65,11 @@ class DataAnalyzer():
         """
         self.topic_callback.update({topic:callback})
         self.client.subscribe(topic)
-    
+
+    # Callback function for MQTT topic 'StandardKpis'
     def standard_kpis(self, payload):
         values = [key['value'] for key in payload]
+        # Calculate standard KPIs
         result = {
             'mean_result' : statistics.mean(values),
             'median_result' : statistics.median(values),
@@ -77,24 +79,28 @@ class DataAnalyzer():
         self.logger.info('mean calculated: {}'.format(statistics.mean(values)))
         self.logger.info('median calculated: {}'.format(statistics.median(values)))
         self.logger.info('stddev calculated: {} \n ======='.format(statistics.stdev(values)))
+        # publish results back on MQTT topic 'StandardKpiResult'
         self.client.publish(topic='StandardKpiResult', payload=json.dumps(result))
         return
 
-    def sliding_mean(self, payload):
-        self.logger.info('calculating sliding mean...')
+#   Callback function for MQTT topic 'Mean' subscription
+    def power_mean(self, payload):
+        self.logger.info('calculating power mean...')
 
-        current_values = [item['value'] for item in payload['current_drive1_batch']]
-        voltage_values = [item['value'] for item in payload['voltage_drive1_batch']]      
+        current_values = [item['value'] for item in payload['current_drive3_batch']]
+        voltage_values = [item['value'] for item in payload['voltage_drive3_batch']]     
+        # Calculate mean of power 
         power_batch_sum = sum([current*voltage for current, voltage in zip(current_values,voltage_values)])
         
-        power_sliding_mean = round((power_batch_sum/payload['sample_number']),2)
-        self.logger.info("sliding mean result: {}\n".format(power_sliding_mean))
+        power_mean = round((power_batch_sum/payload['sample_number']),2)
+        self.logger.info("power mean result: {}\n".format(power_mean))
 
         result = {
-            'sliding_mean_result' : power_sliding_mean,
-            'name' : 'powerdrive1_slidingmean',
+            'power_mean_result' : power_mean,
+            'name' : 'powerdrive3_mean',
         }
-        self.client.publish(topic='SlidingMeanResult', payload=json.dumps(result))
+        # publish result back on MQTT topic 'MeanResult'
+        self.client.publish(topic='MeanResult', payload=json.dumps(result))
         return
 
     def handle_data(self):        
@@ -108,8 +114,12 @@ class DataAnalyzer():
         try:
             self.client.connect(BROKER_ADDRESS)
             self.client.loop_start()
+            self.logger.info('Subscribe to topic StandardKpis')
             self.subscribe(topic='StandardKpis', callback=self.standard_kpis)
-            self.subscribe(topic='SlidingMean', callback=self.sliding_mean)
+            self.logger.info('Subscripe to topic Mean')
+            self.subscribe(topic='Mean', callback=self.power_mean)
+            self.logger.info('Finished subscription to topics')
+            
 
         except Exception as e:
             self.logger.error(str(e))
