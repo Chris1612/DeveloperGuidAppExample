@@ -149,7 +149,7 @@
         ]
       },
       "format": "short",
-      "graphId": "flowchart_23763571993",
+      "graphId": "flowchart_14",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -259,6 +259,8 @@
       "interval": null,
       "legend": {
         "show": true,
+        "sort": "current",
+        "sortDesc": true,
         "values": true
       },
       "legendType": "Under graph",
@@ -283,7 +285,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "currentdrive1",
+          "measurement": "currentdrive3",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",

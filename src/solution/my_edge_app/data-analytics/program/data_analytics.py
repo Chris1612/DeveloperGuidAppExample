@@ -11,9 +11,11 @@ import logging
 import statistics
 import json
 
-BROKER_ADDRESS='mqtt-broker'
+BROKER_ADDRESS='ie_databus'
 BROKER_PORT=1883
 MICRO_SERVICE_NAME = 'data-analytics'
+USERNAME='edge'
+PASSWORD='edge'
 
 class DataAnalyzer():
     """
@@ -112,6 +114,7 @@ class DataAnalyzer():
         
         self.logger.info('Preparing Mqtt Connection')
         try:
+            self.client.username_pw_set(USERNAME, PASSWORD)
             self.client.connect(BROKER_ADDRESS)
             self.client.loop_start()
             self.logger.info('Subscribe to topic StandardKpis')

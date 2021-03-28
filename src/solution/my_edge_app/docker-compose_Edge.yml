@@ -12,13 +12,13 @@ services:
   data-analytics:
     image: data-analytics:v0.0.1        # Name of the built image
     container_name: data-analytics      # Name of the data-analytics container
-    driver: json-file  
     mem_limit: 350m
     restart: unless-stopped             # always restarts (see overview page 12 Industrial Edge Developer Guide)
     logging:                            # allow logging
       options:                          # we use best pactice here as limiting file size and rolling mechanism
         max-size: "10m"                 # File size is 10MB
         max-file: "2"                   # only 2 files created before rolling mechanism applies
+      driver: json-file  
     networks:                           # define networks connected to container 'data-analytics' 
       proxy-redirect:                   # Name of the network
     depends_on:                         # Dependencie on other container
@@ -28,8 +28,7 @@ services:
   influxdb:
     image: influxdb:1.7-alpine  # Define image to pull from docker hub if not already on your machine available
     container_name: influxdb            # Name of the influx-db container
-    restart: unless-stopped             # always restarts (see overview page 12 Industrial Edge Developer Guide)
-    #driver: json-file  
+    restart: unless-stopped             # always restarts (see overview page 12 Industrial Edge Developer Guide)  
     mem_limit: 700m
     environment:                        # Environment variables available at container run-time
       INFLUXDB_DB: edgedb         # Variable of INFLUXDB_DB will be set at runtime as well  ### Hardcoded of ENV
@@ -37,13 +36,11 @@ services:
       options:                          # we use best pactice here as limiting file size and rolling mechanism
         max-size: "10m"                 # File size is 10MB
         max-file: "2"                   # only 2 files created before rolling mechanism applies
+      driver: json-file
     volumes:                            # mount volume from host
       - db-backup:/var/lib/influxdb     # mount named volume 'db-backup' to host's path to /var/lib/influxdb
-    ports:                              # expose of ports and publish
-      - "33086:8086"                    # map containers port 8086 to host's port 33086
     networks:                           # define networks connected to container 'influxdb' 
       proxy-redirect:                   # Name of the network
-
 
 
 ##### GRAFANA #####
@@ -51,15 +48,15 @@ services:
     image: grafana:v0.0.9                             # Name of the built image to be used
     container_name: grafana                           # Name of grafana container
     restart: unless-stopped                           # always restarts (see overview page 12 Industrial Edge Developer Guide)
-    driver: json-file  
     mem_limit: 350m
-    environment:                                      # Environment variables available at container run-time
-      http_proxy: "http://194.145.60.1:9400"                         # Proxy url's from environment   
-      https_proxy: "http://194.145.60.1:9400"
+    #environment:                                      # Environment variables available at container run-time
+      #http_proxy: "http://194.145.60.1:9400"                         # Proxy url's from environment   
+      #https_proxy: "http://194.145.60.1:9400"
     logging:                                          # allow logging
       options:                                        # we use best pactice here as limiting file size and rolling mechanism
         max-size: "10m"                               # File size is 10MB
         max-file: "2"                                 # only 2 files created before rolling mechanism applies
+      driver: json-file  
     networks:                                         # define networks connected to container 'grafana' 
       proxy-redirect:                                 # Name of the network
 
