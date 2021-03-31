@@ -14,6 +14,7 @@ import json
 BROKER_ADDRESS='ie_databus'
 BROKER_PORT=1883
 MICRO_SERVICE_NAME = 'data-analytics'
+""" Broker user and password for authtentification"""
 USERNAME='edge'
 PASSWORD='edge'
 
